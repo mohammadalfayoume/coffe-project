@@ -1,31 +1,6 @@
 'use strict';
-let sectionEl = document.getElementById("cardSection");
-let formEl = document.getElementById("formID");
+
 let allDrinks = [];
-let tableEl = document.getElementById("tableID");
-formEl.addEventListener("submit", handleSubmit);
-
-function handleSubmit(event) {
-    // the default behaviour of submitting the form is to refresh the page
-
-    event.preventDefault();
-    // for text input
-    let drinkName = event.target.drinkName.value
-    let ingredients = event.target.ingredients.value;
-    let image = event.target.image.value;
-    let price = event.target.price.value;
-    // for checkbox input
-    let cold = event.target.cold.checked; // true or false
-    let hot = event.target.hot.checked;
-    let ingredientsArr = ingredients.split(",");
-
-    // create a new drink
-
-    let newDrink = new Drink(drinkName, ingredientsArr, image, cold, hot, price);
-    newDrink.render();
-
-    saveData(allDrinks);
-}
 
 function Drink(name, ingredients, image, isCold, isHot, price) {
     this.name = name;
@@ -37,6 +12,12 @@ function Drink(name, ingredients, image, isCold, isHot, price) {
 
     allDrinks.push(this);
 }
+
+let latte = new Drink("Latte", ["milk", "ice", "sugar"], "./assets/latte.png", true, true, 1);
+let mocha = new Drink("mocha", ["milk", "coffee", "ice", "sugar"], "./assets/mocha.png", true, false, 2);
+let hotChocalte = new Drink("hot chocalte", ["milk", "coffee", "ice", "sugar"], "./assets/mocha.png", true, false, 2)
+
+let sectionEl = document.getElementById("cardSection");
 Drink.prototype.render = function () {
     // createing h3 for the name of the drink
     let name = document.createElement('h3');// <h3> </h3>
@@ -46,6 +27,7 @@ Drink.prototype.render = function () {
     // create the images :
     let imageEl = document.createElement('img');
     imageEl.src = this.image;
+    imageEl.style.width='200px'
     sectionEl.appendChild(imageEl);
 
     // price:
@@ -63,6 +45,9 @@ Drink.prototype.render = function () {
         orderListEl.appendChild(list)
     }
 }
+
+let tableEl = document.getElementById("tableId");
+
 Drink.prototype.renderTable = function () {
     let tr = document.createElement("tr");
     tableEl.appendChild(tr);
@@ -73,24 +58,35 @@ Drink.prototype.renderTable = function () {
 
     let priceTd = document.createElement("td");
     priceTd.textContent = this.price;
-    tr.appendChild(priceTD);
+    tr.appendChild(priceTd);
 }
 
-let latte = new Drink("Latte", ["milk", "ice", "sugar"], "./assets/latte.png", true, true, 1);
-let mocha = new Drink("mocha", ["milk", "coffee", "ice", "sugar"], "./assets/mocha.png", true, false, 2);
-let hotChocalte = new Drink("hot chocalte", ["milk", "coffee", "ice", "sugar"], "./assets/mocha.png", true, false, 2)
+let formEl = document.getElementById("formId");
+formEl.addEventListener("submit", handleSubmit);
 
-function renderAll() {
-    for (let i = 0; i <= allDrinks.length; i++) {
-        allDrinks[i].render();
-        allDrinks[i].renderTable();
-    }
+function handleSubmit(event) {
+    // the default behaviour of submitting the form is to refresh the page
+
+    event.preventDefault();
+    // for text input
+    let drinkName = event.target.drinkName.value;
+    let ingredients = event.target.ingredients.value;
+    let image = event.target.image.value;
+    let price = event.target.price.value;
+    // for checkbox input
+    let cold = event.target.cold.checked; // true or false
+    let hot = event.target.hot.checked;
+    let ingredientsArr = ingredients.split(",");
+
+    // create a new drink
+
+    const newDrink = new Drink(drinkName, ingredientsArr, image, cold, hot, price);
+    newDrink.render();
+    newDrink.renderTable();
+
+    saveData(allDrinks);
 }
 
-
-renderAll();
-
-// local storage:
 function saveData(data) {
 
     let stringfiyData = JSON.stringify(data);
@@ -99,17 +95,22 @@ function saveData(data) {
 
 
 function getData() {
-    let retrievedData = localStorage.getItem("drink");
+    let retrievedData = localStorage.getItem("drinks");
     
     let arrayData = JSON.parse(retrievedData);
     // each object doesn't has access to render method
-    if (arrayData != null) {
-        for (let i = 1; i < arrayData.length; i++) {
+    if (arrayData !== null) {
+        for (let i = 0; i < arrayData.length; i++) {
             // reinstantiation: re creating instance
             new Drink(arrayData[i].name, arrayData[i].ingredients, arrayData[i].image, arrayData[i].isCol, arrayData[i].isHot, arrayData[i].price);
+            
         }
     }
-    renderAll();
+    for (let i = 0; i < allDrinks.length; i++) {
+        allDrinks[i].render();
+        allDrinks[i].renderTable();
+        
+    }
 }
 
 getData();
