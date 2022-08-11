@@ -95,22 +95,31 @@ function saveData(data) {
 
 
 function getData() {
-    let retrievedData = localStorage.getItem("drinks");
-    
-    let arrayData = JSON.parse(retrievedData);
-    // each object doesn't has access to render method
-    if (arrayData !== null) {
-        for (let i = 0; i < arrayData.length; i++) {
-            // reinstantiation: re creating instance
-            new Drink(arrayData[i].name, arrayData[i].ingredients, arrayData[i].image, arrayData[i].isCol, arrayData[i].isHot, arrayData[i].price);
-            
-        }
-    }
-    for (let i = 0; i < allDrinks.length; i++) {
-        allDrinks[i].render();
-        allDrinks[i].renderTable();
+  let retrievedData = localStorage.getItem("drinks");
+
+  let arrayData = JSON.parse(retrievedData);
+  // each object doesn't has access to render method
+  if (arrayData !== null) {
+    for (let i = 0; i < arrayData.length; i++) {
+      if (allDrinks[i]?.name !== arrayData[i].name) {
         
+          // reinstantiation: re creating instance
+          new Drink(
+            arrayData[i].name,
+            arrayData[i].ingredients,
+            arrayData[i].image,
+            arrayData[i].isCol,
+            arrayData[i].isHot,
+            arrayData[i].price
+          );
+        }
+      }
     }
+    
+  for (let i = 0; i < allDrinks.length; i++) {
+    allDrinks[i].render();
+    allDrinks[i].renderTable();
+  }
 }
 
 getData();
